@@ -85,7 +85,7 @@ namespace Kaedei.AliyunDDNSClient
 			{
 				Console.WriteLine(ex.ToString());
 			}
-			Thread.Sleep(5000);
+			//Thread.Sleep(5000);
 		}
 
         public static void println(String str) {
