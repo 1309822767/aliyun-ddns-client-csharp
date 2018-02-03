@@ -25,7 +25,7 @@ namespace Kaedei.AliyunDDNSClient
 				var accessKeySecret = configs[1].Trim(); //Access Key Secret，如 ysHnd1dhWvoOmbdWKx04evlVEdXEW7 
 				var domainName = configs[2].Trim(); //域名，如 google.com
 				var rr = configs[3].Trim(); //子域名，如 www
-				Console.WriteLine("Updating {0} of domain {1}", rr, domainName);
+				println("正在更新记录：" + rr + "，域名：" + domainName);
 
 				var aliyunClient = new DefaultAliyunClient("http://dns.aliyuncs.com/", accessKeyId, accessKeySecret);
 				var req = new DescribeDomainRecordsRequest() { DomainName = domainName };
@@ -34,7 +34,7 @@ namespace Kaedei.AliyunDDNSClient
 				var updateRecord = response.DomainRecords.FirstOrDefault(rec => rec.RR == rr && rec.Type == "A");
 				if (updateRecord == null)
 					return;
-				Console.WriteLine("Domain record IP is " + updateRecord.Value);
+				println("目前域名IP：" + updateRecord.Value);
 
 				//获取IP
 #if NET35
@@ -62,7 +62,7 @@ namespace Kaedei.AliyunDDNSClient
 				var htmlSource = httpClient.GetStringAsync(ConfigurationManager.AppSettings["IpServer"]).Result;
 #endif
 				var ip = Regex.Match(htmlSource, @"((?:(?:25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(?:25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d))))", RegexOptions.IgnoreCase).Value;
-				Console.WriteLine("Current IP is " + ip);
+				println("本机IP地址：" + ip);
 
 				if (updateRecord.Value != ip)
 				{
@@ -74,11 +74,11 @@ namespace Kaedei.AliyunDDNSClient
 						RR = rr
 					};
 					aliyunClient.Execute(changeValueRequest);
-					Console.WriteLine("Update finished.");
+					println("IP地址更新完成。");
 				}
 				else
 				{
-					Console.WriteLine("IPs are same now. Exiting");
+					println("IP地址无变化，退出。");
 				}
 			}
 			catch (Exception ex)
@@ -87,5 +87,9 @@ namespace Kaedei.AliyunDDNSClient
 			}
 			Thread.Sleep(5000);
 		}
+
+        public static void println(String str) {
+            Console.WriteLine("[" + DateTime.Now.ToLongTimeString().ToString() + " INFO] " + str);
+        }
 	}
 }
